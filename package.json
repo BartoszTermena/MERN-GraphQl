@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/BartoszTermena/MERN-GraphQl/issues"
   },
-  "homepage": "https://github.com/BartoszTermena/MERN-GraphQl#readme"
+  "homepage": "https://github.com/BartoszTermena/MERN-GraphQl#readme",
+  "dependencies": {
+    "graphql": "^14.1.1"
+  }
 }
