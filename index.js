@@ -1,6 +1,5 @@
-const express = require('express');
-const graphqlHTTP = require('express-graphql');
-const { graphql, buildSchema } = require('graphql');
+const { ApolloServer, gql } = require('apollo-server')
+
 const crypto = require('crypto')
 
 
@@ -16,17 +15,7 @@ const db = {
     ]
 }
 
-class User {
-    constructor(user) {
-        Object.assign(this, user)
-    }
-
-    messages() {
-        return db.messages.filter(message => message.userId === this.id)
-    }
-}
-
-const schema = buildSchema(`
+const typeDefs = gql`
     type Query {
         users: [User!]!
         user(id: ID!): User
@@ -53,35 +42,31 @@ const schema = buildSchema(`
         body: String!
         createdAt: String
     }
-`)
+`
 
-const rootValue = {
-    users: () => db.users.map(user => new User(user)),
-    user: args => db.users.find(user => user.id === args.id),
-    messages: () => db.messages, 
-    addUser: ({name, email}) => {
-        const user = {
-            id: crypto.randomBytes(10).toString('hex'),
-            email,
-            name
+const resolvers = {
+    Query: {
+        users: () => db.users,
+        user: (root, { id }) => db.users.find(user => user.id === id),
+        messages: () => db.messages, 
+    },
+    Mutation: {
+        addUser: (root, {name, email}) => {
+            const user = {
+                id: crypto.randomBytes(10).toString('hex'),
+                email,
+                name
+            }
+            db.users.push(user)
+    
+            return user
         }
-        db.users.push(user)
-
-        return user
-    }
+    },
+    User: {
+        messages: user => db.messages.filter(message => message.userId === user.id)
+    }   
 }
 
+const server = new ApolloServer({ typeDefs, resolvers })
 
-const app = express();
-
-const PORT = process.env.PORT || 5000;
-
-app.use('/graphql', graphqlHTTP({
-    schema,
-    rootValue,
-    graphiql: true
-}))
-
-app.listen(PORT, () => {
-    console.log(`Listening on ${PORT}`)
-})
+server.listen().then(({url}) => console.log(url))

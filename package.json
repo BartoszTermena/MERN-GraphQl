@@ -4,7 +4,6 @@
   "description": "learning",
   "main": "index.js",
   "scripts": {
-    "start": "node index",
     "dev": "nodemon index"
   },
   "repository": {
@@ -18,8 +17,7 @@
   },
   "homepage": "https://github.com/BartoszTermena/MERN-GraphQl#readme",
   "dependencies": {
-    "express": "^4.16.4",
-    "express-graphql": "^0.7.1",
+    "apollo-server": "^2.4.8",
     "graphql": "^14.1.1",
     "nodemon": "^1.18.10"
   }
